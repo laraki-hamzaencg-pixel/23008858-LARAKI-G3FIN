@@ -1,0 +1,2 @@
+Extraction FRED (UNRATE, GDPC1) le 2026-11-17.
+URL : https://fred.stlouisfed.org/graph/fredgraph.csv?id=<SERIE>
