@@ -1,0 +1,493 @@
+% =====================================================================
+%  RAPPORT À COMPLÉTER
+%  Examen individuel (Partie B) : projet de science des données
+%  appliqué à la finance. S7 FIN et CI, cours BD & DS, ENCG-2026.
+%
+%  Mode d'emploi
+%  1. Remplacez chaque \acompleter{...} (texte rouge) et chaque
+%     \acel{...} (cellule rouge) par votre contenu. Rien ne doit rester
+%     en rouge dans la version remise. Après chaque compilation, le
+%     journal indique le nombre d'éléments qui restent à compléter.
+%  2. Compilez avec pdfLaTeX (sur Overleaf : compilateur pdfLaTeX).
+%     Compilez deux fois pour mettre à jour les renvois et les citations.
+%  3. Les figures sont cherchées dans ../figures/ puis dans figures/.
+%     Tant qu'une figure manque, un cadre la remplace : le document
+%     compile toujours. Sur Overleaf, créez un dossier figures/ et
+%     téléversez-y vos images.
+%  4. Citations : chaque source de la liste « Références et citations »
+%     a une clé (par exemple lie1). Citez-la dans le texte avec \cite{lie1}.
+%  5. Longueur : celle fixée par l'énoncé. Les lignes qui commencent
+%     par % sont des aides : vous pouvez les supprimer.
+%  6. Caractères spéciaux : écrivez \_ pour un tiret bas (par exemple
+%     \texttt{n\_estimators}), \% pour un pourcentage, \& pour &.
+%  7. Page de garde : placez le logo officiel de l'ENCG Settat, nommé
+%     logo_encg_settat.png, à côté de rapport.tex (ou dans figures/).
+%     Tant qu'il manque, un cadre le remplace.
+%  8. Votre photo (format identité) : placez-la à côté de rapport.tex,
+%     nommée photo_etudiant.jpg ou photo_etudiant.png. Tant qu'elle
+%     manque, un cadre la remplace.
+%  9. Lien GitHub : remplacez l'adresse dans la commande \lienDepot
+%     ci-dessous (une seule fois). Il s'affiche sur la page de garde et
+%     en annexe, en rouge tant qu'il n'est pas modifié.
+% 10. Remettez rapport.tex, rapport.pdf, le logo et la photo dans le
+%     dossier rapport/ de votre dépôt CodeApogee-Nom-Groupe.
+% =====================================================================
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[french]{babel}
+\frenchsetup{StandardLists=true}
+\usepackage[margin=1.8cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage[labelsep=colon]{caption}
+\PassOptionsToPackage{hyphens}{url}
+\usepackage[hidelinks]{hyperref}
+
+% ========== Mise en page et commandes du gabarit (ne pas modifier) ==========
+\addto\captionsfrench{%
+  \renewcommand{\tablename}{Tableau}%
+  \renewcommand{\refname}{Références et citations}}
+\setlist{itemsep=1pt,topsep=3pt}
+\setlength{\emergencystretch}{2em}
+\makeatletter
+\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
+  {1.2ex \@plus 0.4ex \@minus 0.2ex}{-1em}{\normalfont\normalsize\bfseries}}
+\makeatother
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+\newcounter{nbacompleter}
+\DeclareRobustCommand{\acompleter}[1]{%
+  \stepcounter{nbacompleter}\textcolor{red}{\textit{[À compléter : #1]}}}
+\DeclareRobustCommand{\acel}[1]{%
+  \stepcounter{nbacompleter}\textcolor{red}{\textit{#1}}}
+% \insererfigure{fichier}{légende}{étiquette}
+\newcommand{\insererfigure}[3]{%
+  \begin{figure}[htbp]
+    \centering
+    \IfFileExists{../figures/#1}{\includegraphics[width=0.62\linewidth]{../figures/#1}}{%
+      \IfFileExists{figures/#1}{\includegraphics[width=0.62\linewidth]{figures/#1}}{%
+        \IfFileExists{#1}{\includegraphics[width=0.62\linewidth]{#1}}{%
+          \IfFileExists{GRAPHIQUES/#1}{\includegraphics[width=0.62\linewidth]{GRAPHIQUES/#1}}{%
+            \fbox{\parbox[c][2.4cm][c]{0.6\linewidth}{\centering\small
+              Figure à insérer : \texttt{figures/\detokenize{#1}}}}}}}}
+    \caption{#2}
+    \label{#3}
+  \end{figure}}
+% ---------- VOTRE LIEN GITHUB : remplacez l'adresse ci-dessous ----------
+\newcommand{\lienDepot}{https://github.com/laraki-hamzaencg-pixel/23008858-Laraki-G3FIN}
+% -------------------------------------------------------------------------
+\newcommand{\lienParDefaut}{https://github.com/identifiant/CodeApogee-Nom-Groupe}
+\newcommand{\afficherlien}{%
+  \ifx\lienDepot\lienParDefaut
+    \stepcounter{nbacompleter}\textcolor{red}{\expandafter\url\expandafter{\lienDepot}}%
+  \else
+    \expandafter\url\expandafter{\lienDepot}%
+  \fi}
+% Photo de l'étudiant(e) : photo_etudiant.jpg ou photo_etudiant.png
+\newcommand{\photo}[1]{\includegraphics[width=3.5cm,height=4.5cm,keepaspectratio]{#1}}
+\newcommand{\insererphoto}{%
+  \IfFileExists{photo_etudiant.jpg}{\photo{photo_etudiant.jpg}}{%
+    \IfFileExists{photo_etudiant.png}{\photo{photo_etudiant.png}}{%
+      \fbox{\parbox[c][4.5cm][c]{3.5cm}{\centering\small\textcolor{red}{\textit{Photo de\\ l'étudiant(e)}}\\[4pt]
+        \scriptsize\texttt{photo\_etudiant.jpg}}}}}}
+% Nom du fichier du logo (modifiez-le si votre fichier porte un autre nom)
+\newcommand{\fichierlogo}{logo_encg_settat.png}
+\newcommand{\insererlogo}{%
+  \IfFileExists{\fichierlogo}{\includegraphics[height=2.8cm]{\fichierlogo}}{%
+    \IfFileExists{figures/\fichierlogo}{\includegraphics[height=2.8cm]{figures/\fichierlogo}}{%
+      \IfFileExists{../figures/\fichierlogo}{\includegraphics[height=2.8cm]{../figures/\fichierlogo}}{%
+        \fbox{\parbox[c][2.8cm][c]{6.5cm}{\centering\small Logo de l'ENCG Settat\\[2pt]
+          \texttt{\detokenize\expandafter{\fichierlogo}}}}}}}}
+\AtEndDocument{\ifnum\value{nbacompleter}>0
+  \typeout{ATTENTION : il reste \arabic{nbacompleter} élément(s) à compléter.}\fi}
+% ===========================================================================
+
+\begin{document}
+
+% =====================================================================
+%  PAGE DE GARDE (non comptée dans la longueur du rapport)
+% =====================================================================
+\begin{titlepage}
+  \centering
+  \insererlogo\par
+  \vspace{0.8cm}
+  {\large Université Hassan 1\ier{} de Settat}\par
+  \vspace{0.2cm}
+  {\Large\bfseries École Nationale de Commerce et de Gestion de Settat}\par
+  \vspace{0.1cm}
+  {\large ENCG Settat}\par
+  \vspace{1.6cm}
+  \rule{\linewidth}{0.8pt}\par
+  \vspace{0.5cm}
+  {\large Cours BD \& DS : examen individuel (Partie B)}\par
+  \vspace{0.3cm}
+  {\Large Rapport de projet de science des données appliqué à la finance}\par
+  \vspace{0.7cm}
+  {\LARGE\bfseries F16 : la loi d'Okun, le chômage américain réagit-il à la croissance du PIB ?}\par
+  \vspace{0.5cm}
+  \rule{\linewidth}{0.8pt}\par
+  \vfill
+  \begin{minipage}[c]{0.66\linewidth}
+  \large
+  \begin{tabular}{@{}ll@{}}
+    Réalisé par          & LARAKI Hamza \\[3pt]
+    Code Apogée          & 23008858 \\[3pt]
+    Groupe et filière    & G3FIN, S7 FIN \\[3pt]
+    Algorithme principal & n°1, régression linéaire \\[3pt]
+    Enseignant(e)        & M. Larhlimi \\[3pt]
+  \end{tabular}
+  \end{minipage}\hfill
+  \begin{minipage}[c]{0.3\linewidth}
+    \centering\insererphoto
+  \end{minipage}\par
+  \vspace{0.8cm}
+  {\large\textbf{Dépôt GitHub :} \afficherlien}\par
+  \vfill
+  {\large Année universitaire 2026-2027}\par
+  \vspace{0.2cm}
+  Remis le \today
+\end{titlepage}
+
+% =====================================================================
+\section{Introduction}
+\label{sec:introduction}
+% =====================================================================
+\paragraph{Contexte.} La loi d'Okun relie la variation du taux de chômage à la croissance de l'économie. Une banque centrale, un ministère des finances ou un analyste s'en servent pour estimer de combien le chômage monte quand la croissance ralentit, et quelle croissance est nécessaire pour que le chômage ne monte pas. Ce lien guide des décisions de politique monétaire et budgétaire~\cite{okun}.
+
+\paragraph{Problématique.} Sur les données trimestrielles des États-Unis, une régression linéaire simple de la variation du taux de chômage sur la croissance du PIB réel décrit-elle mieux le chômage que deux règles naïves, et le coefficient d'Okun est-il stable dans le temps ?
+
+\paragraph{Objectif mesurable.} La métrique principale est la MAE, en points de pourcentage de chômage. Les références naïves sont la moyenne de la variation du chômage sur l'apprentissage et la dernière valeur observée. Le test couvre de 2015 T1 à 2026 T3. Le seuil de réussite, fixé avant de voir le test, est une MAE du modèle inférieure d'au moins 10~\% à celle de la meilleure référence.
+
+\paragraph{Nature du problème.} Régression sur série temporelle trimestrielle, avec un seul prédicteur (la croissance du PIB) ; la variable à expliquer est continue.
+
+\paragraph{Organisation du rapport.} La section~\ref{sec:etat} présente l'état de l'art et la section~\ref{sec:travaux} les travaux liés. Les sections~\ref{sec:donnees} à~\ref{sec:protocole} décrivent les données, leur exploration, leur préparation, l'algorithme retenu et le protocole expérimental. La section~\ref{sec:resultats} présente les résultats, discutés en section~\ref{sec:discussion}, avant la conclusion (section~\ref{sec:conclusion}).
+
+% =====================================================================
+\section{État de l'art}
+\label{sec:etat}
+% =====================================================================
+Pour relier croissance et chômage, trois familles d'approches sont courantes. La première est la référence naïve : prédire la moyenne ou répéter la dernière valeur observée, qui sert de point de comparaison habituel pour juger un modèle de prévision~\cite{hynd}. La deuxième est l'approche économétrique classique : la loi d'Okun, estimée par régression linéaire entre la variation du chômage et la croissance~\cite{okun,ball,knotek}. Elle donne un coefficient interprétable, mais suppose une relation stable et linéaire. La troisième est l'apprentissage automatique non linéaire (arbres, forêts aléatoires), qui capte des relations plus complexes mais ne fournit pas de coefficient lisible et n'extrapole pas hors des valeurs vues~\cite{hastie}.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Panorama des approches pour ce type de problème}
+  \label{tab:etat}
+  \small
+  \begin{tabular}{@{}P{3cm} P{4.3cm} P{3.5cm} P{3.5cm} l@{}}
+    \toprule
+    Approche & Principe & Atouts & Limites & Réf. \\
+    \midrule
+    Référence naïve (moyenne, dernière valeur) & Prédire la moyenne passée ou la valeur du trimestre précédent & Simple, sans estimation ; point de comparaison honnête & Ignore la croissance du PIB & \cite{hynd} \\
+    Régression linéaire (loi d'Okun) & Droite entre la variation du chômage et la croissance & Coefficient interprétable, peu de données nécessaires & Suppose une relation linéaire et stable & \cite{okun,ball} \\
+    Apprentissage automatique (arbres, forêts) & Découpe l'espace des variables en zones et moyenne la cible dans chaque zone & Capte des non-linéarités & Pas de coefficient, n'extrapole pas hors de la zone d'apprentissage & \cite{hastie} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+% =====================================================================
+\section{Travaux liés}
+\label{sec:travaux}
+% =====================================================================
+\begin{table}[htbp]
+  \centering
+  \caption{Travaux liés}
+  \label{tab:travaux}
+  \small
+  \begin{tabular}{@{}P{2.4cm} P{2.8cm} P{2.8cm} P{3.4cm} P{3.8cm}@{}}
+    \toprule
+    Travail & Données & Méthode & Résultat principal & Différence avec ce travail \\
+    \midrule
+    Ball, Leigh et Loungani, 2017~\cite{ball} & États-Unis depuis 1948 et 20 économies avancées depuis 1980 & Estimation de la loi d'Okun, étude de sa stabilité & La relation est forte dans la plupart des pays et assez stable dans le temps ; les annonces de rupture seraient exagérées & Ici : un seul pays, des références naïves et une évaluation hors échantillon sur 2015-2026 \\
+    Knotek, 2007~\cite{knotek} & Données américaines de PIB et de chômage & Étude de l'utilité de la loi d'Okun pour la prévision & La relation varie dans le temps et selon le cycle ; elle reste utile pour prévoir si on tient compte de son instabilité & Ici : test chronologique avec comparaison à des références naïves et analyse sans 2020 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\paragraph{Positionnement.} Ce travail reprend l'idée d'estimer la loi d'Okun sur données américaines, mais l'évalue comme un exercice de prévision : découpage chronologique, comparaison à deux règles naïves, et test de sensibilité sans le choc de 2020.
+
+% =====================================================================
+\section{Jeu de données}
+\label{sec:donnees}
+% =====================================================================
+\begin{itemize}
+  \item \textbf{Nom et source :} FRED, Réserve fédérale de St.~Louis : PIB réel GDPC1 et taux de chômage UNRATE~\cite{donnees}, \url{https://fred.stlouisfed.org/series/GDPC1} et \url{https://fred.stlouisfed.org/series/UNRATE}
+  \item \textbf{Date d'extraction :} 17/11/2026
+  \item \textbf{Licence ou conditions d'utilisation :} données publiques d'administrations américaines (BEA, BLS) diffusées par FRED ; source citée ; aucune licence spécifique relevée
+  \item \textbf{Taille :} 312 observations et 5 variables, de 1948~T2 à 2026~T3, fréquence trimestrielle (chômage mensuel de 946 mois agrégé, PIB de 319 trimestres)
+  \item \textbf{Unité d'observation :} un trimestre calendaire des États-Unis
+  \item \textbf{Variable cible :} \texttt{du}, variation du taux de chômage d'un trimestre à l'autre (points de pourcentage), construite par $u_t-u_{t-1}$
+  \item \textbf{Adéquation :} la loi d'Okun s'écrit justement sous la forme $du = a + b\times g$, avec $b$ négatif attendu
+  \item \textbf{Limites :} un mois de chômage manque (octobre 2025), ce qui exclut 2025~T4 et 2026~T1 ; le PIB est révisé après publication (biais d'anticipation) ; la pandémie de 2020 produit des valeurs extrêmes réelles ; une seule économie
+\end{itemize}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Dictionnaire des principales variables}
+  \label{tab:dictionnaire}
+  \small
+  \begin{tabular}{@{}l P{4.4cm} l P{2.4cm} l c@{}}
+    \toprule
+    Variable & Description & Type & Unité & Rôle & Manquants (\%) \\
+    \midrule
+    \texttt{date} & début du trimestre & date & trimestre & index & 0 \\
+    \texttt{pib} & PIB réel (GDPC1) & numérique & milliards de \$ de 2017 & brute & 0 \\
+    \texttt{u} & taux de chômage, moyenne des 3 mois du trimestre (UNRATE) & numérique & \% & brute & 0,1 \\
+    \texttt{g} (créée) & croissance du PIB : $g_t = 100\,(\mathrm{pib}_t/\mathrm{pib}_{t-1}-1)$ & numérique & \% par trimestre & explicative & 0 \\
+    \texttt{du} (créée) & variation du chômage : $du_t = u_t - u_{t-1}$ & numérique & points de \% & cible & 0 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+% =====================================================================
+\section{Exploration}
+\label{sec:exploration}
+% =====================================================================
+\paragraph{Statistiques descriptives.} Sur les 312 trimestres, la croissance du PIB a une moyenne de 0,78~\% par trimestre (écart-type 1,11 ; de $-7{,}88$ à $+7{,}76$). La variation du chômage a une moyenne de 0,00 point et un écart-type de 0,69 ; la moitié des trimestres est comprise entre $-0{,}20$ et $+0{,}13$ point (minimum $-4{,}20$, maximum $+9{,}17$). La corrélation entre \texttt{g} et \texttt{du} vaut $-0{,}753$ (à titre exploratoire).
+
+\paragraph{Qualité des données.} Aucun doublon de date. Un mois de chômage manque (octobre 2025) : le trimestre incomplet est exclu, ainsi que le trimestre suivant dont la variation aurait porté sur deux trimestres. Les valeurs atypiques sont détectées par un z-score supérieur à 3 en valeur absolue : 1958~T1, 2020~T2 et 2020~T3. Je les garde, car en macroéconomie une valeur extrême est un événement réel (récession, pandémie) ; les supprimer fausserait l'estimation du risque. Un test de sensibilité sans 2020 est fait plus loin.
+
+\insererfigure{g1_series.png}{Taux de chômage américain et croissance trimestrielle du PIB réel, 1948-2026}{fig:1}
+
+\noindent\textbf{Lecture de la figure~\ref{fig:1}.} Le chômage (courbe du haut) monte par à-coups lors des récessions, par exemple vers 1975, en 1982, en 2009 et surtout en 2020, puis redescend lentement. La croissance (courbe du bas) devient négative aux mêmes périodes. Le trimestre 2020~T2 sort de l'échelle : $-7{,}88$~\% de croissance et $+9{,}17$ points de chômage.
+
+\insererfigure{g2_series.png}{Loi d'Okun : variation du chômage selon la croissance du PIB}{fig:2}
+
+\noindent\textbf{Lecture de la figure~\ref{fig:2}.} Le nuage est orienté vers le bas : quand la croissance est faible ou négative, le chômage augmente ; quand elle est forte, il baisse. La relation est assez nette mais pas parfaite, la dispersion autour d'une droite reste importante, et quelques points très isolés correspondent à 2020~T2 et T3.
+
+% =====================================================================
+\section{Préparation}
+\label{sec:preparation}
+% =====================================================================
+\begin{itemize}
+  \item \textbf{Nettoyage :} trimestres incomplets exclus ; \texttt{g} et \texttt{du} sont calculées avant de retirer les lignes vides, pour que chaque ligne garde une variation sur un seul trimestre ; valeurs extrêmes conservées
+  \item \textbf{Variables créées :} \texttt{g} et \texttt{du}, construites avec \texttt{shift(1)}, donc avec le passé seulement ; formules dans le tableau~\ref{tab:dictionnaire}
+  \item \textbf{Encodage et mise à l'échelle :} aucun encodage (variables numériques) ; pas de normalisation, car il y a un seul prédicteur et la régression linéaire ordinaire n'est pas sensible à l'échelle
+\end{itemize}
+
+\paragraph{Prévention des fuites.}
+\begin{itemize}
+  \item[$\boxtimes$] Modèle ajusté sur l'apprentissage seulement ; aucune transformation à ajuster, donc pas de \texttt{Pipeline}.
+  \item[$\boxtimes$] Découpage chronologique, sans mélange (données datées).
+  \item[$\boxtimes$] Variables construites avec le passé seulement ; la relation étant contemporaine, il n'y a pas d'horizon $h$ ni d'écart à laisser entre apprentissage et test.
+  \item[$\boxtimes$] Aucune variable ne contient la cible, même indirectement.
+  \item[$\boxtimes$] Jeu de test utilisé une seule fois, à la fin.
+\end{itemize}
+L'alignement des dates a été vérifié en affichant les premières et dernières lignes (date, \texttt{pib}, \texttt{u}, \texttt{g}, \texttt{du}) : \texttt{g} et \texttt{du} portent sur le même trimestre et sont calculées avec $t$ et $t-1$ seulement.
+
+% =====================================================================
+\section{Algorithme}
+\label{sec:algorithme}
+% =====================================================================
+\paragraph{Choix.} Algorithme n°1 du support~\cite{support} : la régression linéaire. Avec un seul prédicteur et une relation économique attendue linéaire, elle est adaptée à l'état de l'art (section~\ref{sec:etat}) et fournit un coefficient interprétable. L'arbre de régression et la forêt aléatoire ont été écartés : ils n'ajoutent rien avec un seul prédicteur, ne donnent pas de coefficient lisible et n'extrapolent pas hors des valeurs vues, par exemple une récession plus profonde que celles de l'apprentissage.
+
+\paragraph{Principe.} Le modèle cherche la droite qui rend minimale la somme des carrés des erreurs, $\min \sum_t (du_t - a - b\,g_t)^2$ (moindres carrés ordinaires). L'implémentation utilise \texttt{LinearRegression} de scikit-learn~\cite{sklearn}, et \texttt{statsmodels}~\cite{statsmodels} pour l'intervalle de confiance du coefficient.
+
+\paragraph{Formule essentielle.}
+\begin{equation}
+  \widehat{du}_t = a + b\, g_t
+  \label{eq:principale}
+\end{equation}
+où $\widehat{du}_t$ est la variation prédite du taux de chômage au trimestre $t$ (points de pourcentage), $g_t$ la croissance du PIB réel au trimestre $t$ (\% par trimestre), $a$ l'ordonnée à l'origine (variation du chômage quand la croissance est nulle) et $b$ le coefficient d'Okun (points de chômage par point de croissance). La croissance qui laisse le chômage stable vaut $g^* = -a/b$.
+
+\paragraph{Paramètres appris.} Les deux paramètres $a$ et $b$, estimés sur l'apprentissage.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Hyperparamètres étudiés}
+  \label{tab:hyper}
+  \small
+  \begin{tabular}{@{}l P{6.4cm} l l@{}}
+    \toprule
+    Hyperparamètre & Rôle et effet attendu & Valeurs testées & Valeur retenue \\
+    \midrule
+    aucun (régression ordinaire) & La régression linéaire ordinaire n'a pas d'hyperparamètre à régler & aucune & sans objet \\
+    \texttt{alpha} (Ridge, non retenu) & Pénalité qui réduit le coefficient vers 0 : plus il est grand, plus le coefficient est réduit & non testé & sans objet \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+% =====================================================================
+\section{Protocole expérimental}
+\label{sec:protocole}
+% =====================================================================
+\begin{table}[htbp]
+  \centering
+  \caption{Découpage des données}
+  \label{tab:decoupage}
+  \small
+  \begin{tabular}{@{}l l r@{}}
+    \toprule
+    Ensemble & Période ou proportion & Observations \\
+    \midrule
+    Apprentissage & du 1948~T2 au 2014~T4 & 267 \\
+    Validation & validation croisée \texttt{TimeSeriesSplit}, 5 plis, dans l'apprentissage & --- \\
+    Test & du 2015~T1 au 2026~T3 & 45 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{itemize}
+  \item \textbf{Référence naïve :} (1) la moyenne de \texttt{du} sur l'apprentissage ; (2) la dernière valeur observée, $du_t = du_{t-1}$. Ce sont les règles les plus simples qui n'utilisent pas la croissance du PIB.
+  \item \textbf{Validation :} \texttt{TimeSeriesSplit}, 5 plis ; aucun hyperparamètre réglé, donc une seule configuration essayée.
+  \item \textbf{Métrique principale :} MAE, erreur absolue moyenne en points de pourcentage de chômage. Elle est lisible dans l'unité du problème et peu sensible aux valeurs extrêmes.
+  \item \textbf{Métriques secondaires :} RMSE (pénalise les grosses erreurs, donc le choc de 2020) et $R^2$ (part de variance expliquée, négatif si le modèle fait pire que la moyenne).
+  \item \textbf{Graine aléatoire :} 42.
+\end{itemize}
+
+% =====================================================================
+\section{Résultats}
+\label{sec:resultats}
+% =====================================================================
+\begin{table}[htbp]
+  \centering
+  \caption{Comparaison des références naïves et du modèle}
+  \label{tab:resultats}
+  \small
+  \begin{tabular}{@{}l cc c c@{}}
+    \toprule
+    & \multicolumn{2}{c}{MAE (points)} & RMSE & $R^2$ \\
+    \cmidrule(lr){2-3}
+    Modèle & Validation & Test & Test & Test \\
+    \midrule
+    Référence 1 : moyenne du train & 0,241 $\pm$ 0,039 & 0,500 & 1,553 & $-0{,}001$ \\
+    Référence 2 : dernière valeur & 0,208 $\pm$ 0,049 & 0,703 & 2,435 & $-1{,}461$ \\
+    Régression linéaire & 0,203 $\pm$ 0,033 & \textbf{0,433} & \textbf{1,127} & \textbf{0,473} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\insererfigure{g4_series.png}{Droite estimée sur l'apprentissage (1948-2014) et points du test (2015-2026)}{fig:3}
+
+\paragraph{Lecture des résultats.} Sur le test, la régression a la plus petite erreur : MAE de 0,433 point de chômage contre 0,500 pour la moyenne et 0,703 pour la dernière valeur, soit un rapport de 0,866 à la meilleure référence (tableau~\ref{tab:resultats}). Le coefficient d'Okun vaut $b=-0{,}281$, avec un intervalle de confiance à 95~\% de $[-0{,}317\,;-0{,}245]$ : un point de croissance en plus fait baisser le chômage d'environ 0,28 point. L'ordonnée vaut $a=0{,}232$ et la croissance qui stabilise le chômage $g^*=0{,}82$~\% par trimestre, soit environ 3,3~\% par an. La figure~\ref{fig:3} montre une droite descendante dont les points du test s'écartent peu, sauf quelques cas isolés en 2020.
+
+\paragraph{Analyse des erreurs.} Les cinq plus grosses erreurs sont toutes en 2020-2021 : en 2020~T2 le modèle prévoit $+2{,}44$ points alors que le chômage a augmenté de $9{,}17$ (erreur de 6,72) ; en 2020~T3 il prévoit $-1{,}95$ pour $-4{,}20$ réel ; 2020~T4, 2021~T3 et 2021~T4 sont aussi mal prédits. Ce sont des chocs liés à la pandémie et à la reprise qui ne ressemblent pas à un cycle ordinaire.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Prédictions sur des observations non utilisées pour l'apprentissage}
+  \label{tab:illustration}
+  \small
+  \begin{tabular}{@{}l l l P{7cm}@{}}
+    \toprule
+    Observation & Prédiction & Valeur réelle & Commentaire \\
+    \midrule
+    2015~T1 ($g=0{,}90$~\%) & $-0{,}02$ & $-0{,}17$ & Erreur de $-0{,}15$ point : le modèle prévoit un chômage un peu plus haut \\
+    2018~T3 ($g=0{,}62$~\%) & $+0{,}06$ & $-0{,}17$ & Erreur de $-0{,}22$ point : croissance moyenne, chômage en baisse \\
+    2022~T2 ($g=0{,}14$~\%) & $+0{,}19$ & $-0{,}23$ & Erreur de $-0{,}43$ point : croissance faible mais marché du travail très tendu (explication non testée) \\
+    2026~T3 ($g=0{,}83$~\%) & $-0{,}00$ & $-0{,}13$ & Erreur de $-0{,}13$ point : petite erreur \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+% =====================================================================
+\section{Discussion des résultats}
+\label{sec:discussion}
+% =====================================================================
+\paragraph{Réponse à l'objectif.} L'objectif fixé dans l'introduction est atteint sur le papier, car la MAE du modèle (0,433) est inférieure de 13,4~\% à celle de la meilleure référence (0,500), soit un rapport de 0,866 pour un seuil de 0,90. Il n'est pas atteint de façon robuste : sans 2020~T2 et T3, la régression fait légèrement pire que les références (MAE de 0,245 contre 0,213 pour la moyenne et 0,217 pour la dernière valeur) et les trois $R^2$ sont négatifs (tableau~\ref{tab:sensibilite}).
+
+\paragraph{Interprétation.} Le gain vient du choc de 2020 : le modèle bat les références parce qu'il capte le sens du mouvement dans les trimestres extrêmes, même s'il sous-estime leur ampleur. En temps normal, la variation du chômage est proche de zéro et la droite n'apporte presque rien de plus que la moyenne. Le coefficient est un lien statistique ; il ne prouve pas que la croissance cause la baisse du chômage.
+
+\paragraph{Surapprentissage et généralisation.} La MAE du test (0,433) est plus du double de celle de l'apprentissage (0,212), ce qui peut sembler du surapprentissage ; l'écart vient surtout du choc de 2020, absent de la même ampleur dans l'apprentissage. En validation croisée, le modèle est le meilleur (0,203 contre 0,241 et 0,208), mais l'écart avec la dernière valeur est plus petit que l'écart-type des plis : il n'est pas solide. Le coefficient est stable entre sous-périodes ($-0{,}29$, $-0{,}29$ puis $-0{,}27$, tableau~\ref{tab:stabilite}), mais varie davantage sur une fenêtre glissante de 10 ans (de $-0{,}11$ environ vers 2001 à $-0{,}39$ environ vers 1992 et après 2010).
+
+\paragraph{Comparaison avec les travaux liés.} Ces résultats vont dans le sens de Ball et al.~\cite{ball} : la relation existe en permanence et son coefficient est assez stable entre sous-périodes. Ils rejoignent aussi Knotek~\cite{knotek} : la force de la relation varie selon la période, ce qui limite son usage comme règle de prévision fixe.
+
+\paragraph{Limites et biais.} (1) Le PIB est révisé : j'utilise la version actuelle, pas celle connue à l'époque (biais d'anticipation) ; (2) la relation est contemporaine, elle décrit mais ne prévoit pas le chômage à l'avance ; (3) un mois manquant en octobre 2025 fait perdre deux trimestres ; (4) un seul pays et un seul prédicteur ; (5) un test court de 45 trimestres dominé par 2020.
+
+\paragraph{Pistes d'amélioration.} Ajouter la croissance retardée (\texttt{g.shift(1)}) pour faire une vraie prévision, et utiliser ALFRED pour disposer des versions historiques du PIB ; comparer aussi à une régression Ridge.
+
+% =====================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+% =====================================================================
+La loi d'Okun se vérifie sur les données américaines : un point de croissance en plus fait baisser le chômage d'environ 0,28 point, avec un coefficient négatif et proche entre sous-périodes (de $-0{,}29$ à $-0{,}27$). Sur le test (2015-2026), la régression réduit la MAE de 13,4~\% par rapport à la meilleure référence (0,433 contre 0,500), donc l'objectif de 10~\% est atteint. Mais hors 2020 elle ne bat plus les références : le gain vient du choc de 2020 et non d'une meilleure prévision en temps normal. Une perspective est d'ajouter la croissance retardée pour passer de la description à la prévision.
+
+% =====================================================================
+\begin{thebibliography}{9}
+  \bibitem{donnees} Federal Reserve Bank of St.~Louis, FRED : séries GDPC1 (PIB réel) et UNRATE (taux de chômage), \url{https://fred.stlouisfed.org/series/GDPC1} et \url{https://fred.stlouisfed.org/series/UNRATE}, consultées le 17/11/2026.
+  \bibitem{okun} A.~M.~Okun, « Potential GNP: Its Measurement and Significance », \textit{Proceedings of the Business and Economic Statistics Section}, American Statistical Association, 1962.
+  \bibitem{ball} L.~Ball, D.~Leigh et P.~Loungani, « Okun's Law: Fit at 50? », \textit{Journal of Money, Credit and Banking}, vol.~49, n°7, p.~1413-1441, 2017.
+  \bibitem{knotek} E.~S.~Knotek, « How Useful Is Okun's Law? », \textit{Economic Review}, Federal Reserve Bank of Kansas City, vol.~92, n°4, p.~73-103, 2007.
+  \bibitem{hynd} R.~J.~Hyndman et G.~Athanasopoulos, \textit{Forecasting: Principles and Practice}, 3\ieme{} éd., OTexts, 2021, \url{https://otexts.com/fpp3/}.
+  \bibitem{hastie} T.~Hastie, R.~Tibshirani et J.~Friedman, \textit{The Elements of Statistical Learning}, 2\ieme{} éd., Springer, 2009.
+  \bibitem{sklearn} F.~Pedregosa \textit{et al.}, « Scikit-learn: Machine Learning in Python », \textit{Journal of Machine Learning Research}, vol.~12, p.~2825-2830, 2011.
+  \bibitem{statsmodels} S.~Seabold et J.~Perktold, « Statsmodels: Econometric and Statistical Modeling with Python », \textit{Proceedings of the 9th Python in Science Conference}, 2010.
+  \bibitem{support} Support du cours BD \& DS, notebook \texttt{Tp\_ML.ipynb}, ENCG-2026.
+\end{thebibliography}
+
+% =====================================================================
+\appendix
+
+\section{Reproduction}
+\label{ann:reproduction}
+Version corrigée : étiquette \texttt{remise-finale} du dépôt \afficherlien.
+\begin{enumerate}
+  \item Cloner le dépôt : \texttt{git clone} suivi du lien ci-dessus.
+  \item Installer les dépendances : \texttt{pip install -r requirements.txt}.
+  \item Exécuter \texttt{notebooks/projet\_F16.ipynb} avec « Redémarrer et tout exécuter ».
+\end{enumerate}
+
+\section{Tableaux et figures complémentaires}
+\label{ann:complements}
+\begin{table}[htbp]
+  \centering
+  \caption{Test de sensibilité : évaluation sans 2020~T2 et T3}
+  \label{tab:sensibilite}
+  \small
+  \begin{tabular}{@{}l c c c@{}}
+    \toprule
+    Modèle & MAE & RMSE & $R^2$ \\
+    \midrule
+    Référence 1 : moyenne & 0,213 & 0,402 & $-0{,}187$ \\
+    Référence 2 : dernière valeur & 0,217 & 0,441 & $-0{,}433$ \\
+    Régression linéaire & 0,245 & 0,399 & $-0{,}174$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Coefficient d'Okun par sous-période (apprentissage)}
+  \label{tab:stabilite}
+  \small
+  \begin{tabular}{@{}l r r c@{}}
+    \toprule
+    Période & Trimestres & $b$ & IC à 95~\% \\
+    \midrule
+    1948-1969 & 87 & $-0{,}293$ & $[-0{,}351\,;-0{,}236]$ \\
+    1970-1989 & 80 & $-0{,}288$ & $[-0{,}351\,;-0{,}225]$ \\
+    1990-2014 & 100 & $-0{,}273$ & $[-0{,}351\,;-0{,}194]$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\insererfigure{g5_series.png}{Erreurs du modèle sur le test, dans le temps}{fig:erreurs}
+
+\insererfigure{g6_series.png}{Coefficient d'Okun sur une fenêtre glissante de 40 trimestres}{fig:stabilite}
+
+Le tableau~\ref{tab:sensibilite} et la figure~\ref{fig:erreurs} sont discutés en section~\ref{sec:discussion}, ainsi que le tableau~\ref{tab:stabilite} et la figure~\ref{fig:stabilite}.
+
+\section{Déclaration des outils d'IA}
+\label{ann:ia}
+\begin{table}[htbp]
+  \centering
+  \caption{Ressources et outils d'IA utilisés}
+  \label{tab:ia}
+  \small
+  \begin{tabular}{@{}P{3cm} P{4.8cm} P{3.3cm} P{4.4cm}@{}}
+    \toprule
+    Outil ou ressource & Usage précis & Parties concernées & Vérification effectuée \\
+    \midrule
+    Claude (Anthropic), 17/11/2026 & Proposition d'une structure de notebook et de code de régression linéaire sur série temporelle ; explications de notions (fuite de données, TimeSeriesSplit, MAE) ; aide à la mise en forme du rapport & Notebook, sections 1 à 7 ; rapport & Code lu, exécuté et adapté par moi ; sorties relues ; interprétations rédigées après lecture de mes propres résultats \\
+    Documentation scikit-learn, statsmodels & Syntaxe des fonctions & Notebook, sections 4 à 7 & Comparaison avec les sorties \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\end{document}
